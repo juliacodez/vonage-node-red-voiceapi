@@ -724,6 +724,7 @@ Play DTMF tones  into a call
 <script>
 
     function getnumbers() {
+        console.log("getnumbers() gets called");
         var url = 'vonage-auth/numbers';
         var params = {
             creds: document.getElementById("node-input-creds").value,
