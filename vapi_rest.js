@@ -13,7 +13,7 @@ module.exports = function (RED) {
     this.machinedetection = config.machinedetection
     this.contenttype = config.contenttype
     var node = this;
-    node.on('input', function (msg) {
+    node.on('input', function (msg, send , done) {
       var debug = (this.context().global.get('vonageDebug') | false);
       var data = dataobject(this.context(), msg);
       this.to = mustache.render(config.to, data);
@@ -80,10 +80,14 @@ module.exports = function (RED) {
       }
       clean(request);
       vonage.calls.create(request, (err, response) => {
-        if(err) { console.error(err); }
+        if(err) {
+          node.error(err.body);
+          done();
+        }
         else {
           msg.payload=response;
-          node.send(msg)  
+          send(msg)  
+          done();
         }
       });  
     });  
@@ -415,6 +419,7 @@ function playdtmf(config){
         if (err) {
           console.error(err)
         } else {
+          console.log(JSON.stringify(response));
           res.send(response.numbers);
         }
       })    
